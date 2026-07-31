@@ -11,18 +11,18 @@ class Config {
 
   // ---------- プレイヤーの当たり判定（可変）関連 ----------
   static final float PLAYER_RADIUS_BASE          = 8.0;  // 初期の当たり判定半径
-  static final float PLAYER_RADIUS_MIN           = 4.0;  // マンジャロ使用時でも下回らない最小半径
+  static final float PLAYER_RADIUS_MIN           = 5.0;  // マンジャロ使用時でも下回らない最小半径
   static final float PLAYER_RADIUS_MAX           = 50.0; // 被弾による拡大の上限
   static final float PLAYER_RADIUS_GROWTH_PER_HIT = 10.0; // 被弾1回あたりの半径増加量
 
   // ---------- ダメージ関連 ----------
-  static final int ENEMY_BULLET_DAMAGE = 0; // 敵弾がプレイヤーに当たった時のダメージ量
+  static final int ENEMY_BULLET_DAMAGE = 1; // 敵弾がプレイヤーに当たった時のダメージ量
 
   // ---------- マンジャロ（当たり判定リセットアイテム）関連 ----------
   static final int   MANJARO_START_COUNT           = 3;   // 開始時の所持数
-  static final float MANJARO_RADIUS_SHRINK         = 8.0; // 使用時に半径から減らす量
+  static final float MANJARO_RADIUS_SHRINK         = 0.5; // 使用時に減少する割合
   static final int   MANJARO_DEBUFF_DURATION_FRAMES = 180; // デバフの持続時間（3秒 @60FPS）
-  static final float MANJARO_DEBUFF_SPEED_MULTIPLIER = 0.5; // デバフ中の移動速度倍率
+  static final float MANJARO_DEBUFF_SPEED_MULTIPLIER = 0.3; // デバフ中の移動速度倍率
 
   // ---------- カメラ関連 ----------
   // プレイヤーを画面のどの高さ（比率）に固定表示するか（0=最上部, 1=最下部）
@@ -36,20 +36,27 @@ class Config {
   static final float REMOVE_MARGIN_BELOW_SCREEN = 100; // 画面下端よりどれだけ下に出たら削除するか
 
   // ---------- 敵弾（まっすぐ落下）関連 ----------
-  static final int   STRAIGHT_FALL_INTERVAL = 10;  // 生成間隔（フレーム数）
-  static final float STRAIGHT_FALL_SPEED    = 4.0;
+  static final int   STRAIGHT_FALL_INTERVAL = 20;  // 生成間隔（フレーム数）
+  static final float STRAIGHT_FALL_SPEED    = 2.0;
   static final float STRAIGHT_FALL_RADIUS   = 15.0;
 
   // ---------- 敵弾（自機狙い落下）関連 ----------
   static final int   AIMED_FALL_INTERVAL        = 70;
-  static final float AIMED_FALL_SPEED           = 5.0;
+  static final float AIMED_FALL_SPEED           = 3.0;
   static final float AIMED_FALL_RADIUS          = 15.0;
   static final float AIMED_FALL_AIM_DISTANCE    = 800; // この距離分下に落ちる間に自機のX位置へ寄せる（緩やかに狙う）
 
   // ---------- 敵弾（横一列＋隙間の壁）関連 ----------
   static final int   WAVE_FALL_INTERVAL      = 150;
-  static final float WAVE_FALL_SPEED         = 3.0;
+  static final float WAVE_FALL_SPEED         = 1.0;
   static final float WAVE_FALL_RADIUS        = 12.0;
   static final float WAVE_FALL_GAP_WIDTH     = 110; // 通り抜けられる隙間の幅
-  static final float WAVE_FALL_BULLET_SPACING = 40; // 壁を構成する弾同士の間隔
+  static final float WAVE_FALL_BULLET_SPACING = 80; // 壁を構成する弾同士の間隔
+  
+  // ---------- 敵弾（横方向ホーミング落下）関連 ----------
+  static final int   HOMING_FALL_INTERVAL             = 300; // 生成間隔（フレーム数）
+  static final float HOMING_FALL_SPEED                = 1.5; // 縦方向速度（生成後は不変）
+  static final float HOMING_FALL_RADIUS               = 8.0;
+  static final float HOMING_FALL_MAX_HORIZONTAL_SPEED = 3.0; // 横方向速度の上限
+  static final float HOMING_FALL_TURN_RATE            = 0.04; // 1フレームあたりの横方向速度の補正割合（0〜1）
 }

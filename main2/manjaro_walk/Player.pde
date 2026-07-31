@@ -85,7 +85,7 @@ class Player {
     if (manjaroCount <= 0) return;
 
     manjaroCount--;
-    radius = max(Config.PLAYER_RADIUS_MIN, radius - Config.MANJARO_RADIUS_SHRINK);
+    radius = max(Config.PLAYER_RADIUS_MIN, radius * Config.MANJARO_RADIUS_SHRINK);
     manjaroDebuffTimer = Config.MANJARO_DEBUFF_DURATION_FRAMES;
   }
 

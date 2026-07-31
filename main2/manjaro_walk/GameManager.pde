@@ -86,8 +86,8 @@ class GameManager {
     // 敵弾生成（画面上部の画面外から生成される）
     attackDirector.update(camera, player.pos, enemyBullets);
 
-    // 移動更新（既存の弾を動かす）
-    for (EnemyBullet b : enemyBullets) b.update();
+    // 移動更新（既存の弾を動かす。ホーミング弾はプレイヤー座標を使って横方向を補正する）
+    for (EnemyBullet b : enemyBullets) b.updateWithPlayer(player.pos);
 
     // 当たり判定（内部でEffect生成も行う）
     collisionManager.checkAll(player, enemyBullets, effects);

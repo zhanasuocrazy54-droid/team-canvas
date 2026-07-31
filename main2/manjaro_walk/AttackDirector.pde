@@ -12,6 +12,7 @@ class AttackDirector {
   AttackDirector() {
     patterns = new ArrayList<FallPattern>();
     patterns.add(new StraightFallPattern());
+    patterns.add(new HomingFallPattern());
     patterns.add(new AimedFallPattern());
     patterns.add(new WaveFallPattern());
   }
