@@ -22,7 +22,6 @@ class RadialPattern extends BulletPattern {
       float angle = angleStep * i;
       PVector vel = new PVector(cos(angle), sin(angle));
       vel.mult(bulletSpeed);
-      // 弾ごとのhpは敵の難易度（maxBulletHp）に応じてランダムに決まる
       enemyBullets.add(new EnemyBullet(enemy.pos, vel, bulletRadius, enemy.rollBulletHp()));
     }
   }

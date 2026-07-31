@@ -12,8 +12,9 @@ boolean[] keysHeld = new boolean[256];
 
 PFont gameFont; // 日本語表示用フォント（setup()で読み込む）
 
+
 void setup() {
-  size(480, 640);
+  size(640, 800);
   // 日本語グリフを持つシステムフォントを読み込む
   // Windowsなら "Meiryo"（メイリオ）が入っていることが多い
   gameFont = createFont("Meiryo", 32, true);

@@ -5,8 +5,7 @@
 class CollisionManager {
 
   // ---------- プレイヤー通常弾 vs 敵弾 ----------
-  // 衝突したら敵弾にダメージを与える。hpが尽きたときだけ実際に消滅させ、Effectを生成する
-  // （hp>1の硬い敵弾は複数発当てないと消えない）
+  // 衝突したら両方を削除し、Effectを生成する
   void checkPlayerBulletsVsEnemyBullets(ArrayList<PlayerBullet> playerBullets,
                                          ArrayList<EnemyBullet> enemyBullets,
                                          ArrayList<Effect> effects) {
@@ -17,13 +16,10 @@ class CollisionManager {
       for (int j = enemyBullets.size() - 1; j >= 0; j--) {
         EnemyBullet eb = enemyBullets.get(j);
         if (pb.isHit(eb.pos, eb.radius)) {
-          boolean destroyed = eb.damage(1);
-          if (destroyed) {
-            effects.add(new Effect(eb.pos, "cancel"));
-            enemyBullets.remove(j);
-          }
+          effects.add(new Effect(eb.pos, "cancel"));
+          enemyBullets.remove(j);
           hit = true;
-          break; // 通常弾は1発につき1つの敵弾にのみ当たる
+          break; // 通常弾は1発につき1つの敵弾と相殺する
         }
       }
 
@@ -34,7 +30,7 @@ class CollisionManager {
   }
 
   // ---------- 近接攻撃 vs 敵弾 ----------
-  // 近接攻撃は強力な武器として、hpに関係なく範囲内の敵弾を即座に消す
+  // 近接攻撃自体は消えず、範囲内の敵弾のみを削除する
   void checkMeleeVsEnemyBullets(Player player,
                                  ArrayList<EnemyBullet> enemyBullets,
                                  ArrayList<Effect> effects) {

@@ -22,7 +22,7 @@ class RadialPattern extends BulletPattern {
       float angle = angleStep * i;
       PVector vel = new PVector(cos(angle), sin(angle));
       vel.mult(bulletSpeed);
-      enemyBullets.add(new EnemyBullet(enemy.pos, vel, bulletRadius));
+      enemyBullets.add(new EnemyBullet(enemy.pos, vel, bulletRadius, enemy.rollBulletHp()));
     }
   }
 }

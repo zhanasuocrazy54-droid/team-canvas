@@ -1,6 +1,6 @@
 // ==============================
 // ゲーム全体を統括するクラス
-// 責務：各オブジェクトの生成・ゲームループの制御・勝敗判定・レベルアップ進行
+// 責務：各オブジェクトの生成・ゲームループの制御・勝敗判定
 // ==============================
 class GameManager {
   Player player;
@@ -42,13 +42,13 @@ class GameManager {
   // 敵と使用する弾幕パターンを生成する
   // 将来的な複数ボス対応は、Enemyを複数生成しリストで管理する形に拡張できる
   void setupEnemy() {
-  enemy = new Enemy(new PVector(width / 2, 80));
-  enemy.patterns.add(new RadialPattern());
-  enemy.patterns.add(new AimPattern());
-
-  // まだ有効化されていない弾幕パターン（レベルアップで段階的に解放される）
-  enemy.addLockedPattern(new SpiralPattern());
-}
+    enemy = new Enemy(new PVector(width / 2, 80));
+    enemy.patterns.add(new RadialPattern());
+    //enemy.patterns.add(new SpiralRadialPattern());
+    enemy.patterns.add(new DriftingRadialPattern());
+    enemy.patterns.add(new AimPattern());
+    enemy.patterns.add(new AimPattern_Double());
+  }
 
   // 弾・エフェクトの管理リストと当たり判定処理を初期化する
   void setupLists() {
@@ -56,7 +56,7 @@ class GameManager {
     enemyBullets = new ArrayList<EnemyBullet>();
     effects = new ArrayList<Effect>();
     collisionManager = new CollisionManager();
-    levelUpManager = new LevelUpManager();
+      levelUpManager = new LevelUpManager();
   }
 
   // 経過時間・ゲーム状態を初期化する
@@ -123,6 +123,7 @@ class GameManager {
   void checkLevelUp() {
     if (elapsedFrames >= nextLevelUpFrame) {
       nextLevelUpFrame += Config.LEVEL_UP_INTERVAL_FRAMES;
+
       levelUpManager.startLevelUp(this);
     }
   }
@@ -146,7 +147,7 @@ class GameManager {
     for (Effect e : effects) e.draw();
 
     drawUI();
-
+    
     // レベルアップ選択中は最後に画面全体へ選択肢を重ねて表示する
     levelUpManager.draw();
   }

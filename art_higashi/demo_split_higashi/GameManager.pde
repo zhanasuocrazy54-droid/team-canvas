@@ -11,8 +11,10 @@ class GameManager {
   ArrayList<Effect> effects;
 
   CollisionManager collisionManager;
+  LevelUpManager levelUpManager;
 
   int elapsedFrames;
+  int nextLevelUpFrame; // 次にレベルアップ判定を行うフレーム数
   GameState state;
 
   GameManager() {
@@ -41,8 +43,8 @@ class GameManager {
   // 将来的な複数ボス対応は、Enemyを複数生成しリストで管理する形に拡張できる
   void setupEnemy() {
     enemy = new Enemy(new PVector(width / 2, 80));
-    //enemy.patterns.add(new RadialPattern());
-    enemy.patterns.add(new SpiralRadialPattern());
+    enemy.patterns.add(new RadialPattern());
+    //enemy.patterns.add(new SpiralRadialPattern());
     enemy.patterns.add(new DriftingRadialPattern());
     enemy.patterns.add(new AimPattern());
     enemy.patterns.add(new AimPattern_Double());
@@ -54,17 +56,24 @@ class GameManager {
     enemyBullets = new ArrayList<EnemyBullet>();
     effects = new ArrayList<Effect>();
     collisionManager = new CollisionManager();
+      levelUpManager = new LevelUpManager();
   }
 
   // 経過時間・ゲーム状態を初期化する
   void setupState() {
     elapsedFrames = 0;
+    nextLevelUpFrame = Config.LEVEL_UP_INTERVAL_FRAMES;
     state = GameState.PLAYING;
   }
 
   // ---------- 更新（ゲームループ本体） ----------
   // 入力→移動→攻撃生成→敵弾生成→移動更新→当たり判定→Effect生成→不要オブジェクト削除
   void update() {
+    // レベルアップ選択中はゲーム進行を止め、入力受付のみ行う
+    if (state == GameState.LEVEL_UP) {
+      levelUpManager.handleInput(this);
+      return;
+    }
     if (state != GameState.PLAYING) return;
 
     // 入力・移動（プレイヤー）
@@ -73,7 +82,8 @@ class GameManager {
     // 攻撃生成（プレイヤー武器）
     player.updateWeapons(playerBullets);
 
-    // 敵弾生成
+    // 敵の移動・敵弾生成
+    enemy.move();
     enemy.updatePatterns(player.pos, enemyBullets);
 
     // 移動更新（既存の弾を動かす）
@@ -89,8 +99,9 @@ class GameManager {
     // 不要オブジェクト削除
     removeOffscreenBullets();
 
-    // 経過時間・勝敗判定
+    // 経過時間・レベルアップ判定・敗北判定
     elapsedFrames++;
+    checkLevelUp();
     checkGameEnd();
   }
 
@@ -108,12 +119,19 @@ class GameManager {
     }
   }
 
-  // 勝敗判定
+  // 一定時間（Config.LEVEL_UP_INTERVAL_FRAMES）ごとにレベルアップ（3択選択）を発生させる
+  void checkLevelUp() {
+    if (elapsedFrames >= nextLevelUpFrame) {
+      nextLevelUpFrame += Config.LEVEL_UP_INTERVAL_FRAMES;
+
+      levelUpManager.startLevelUp(this);
+    }
+  }
+
+  // 敗北判定のみ（時間制限による勝利は撤廃し、エンドレスにする）
   void checkGameEnd() {
     if (player.isDead()) {
       state = GameState.LOSE;
-    } else if (elapsedFrames >= Config.TIME_LIMIT_FRAMES) {
-      state = GameState.WIN;
     }
   }
 
@@ -129,6 +147,9 @@ class GameManager {
     for (Effect e : effects) e.draw();
 
     drawUI();
+    
+    // レベルアップ選択中は最後に画面全体へ選択肢を重ねて表示する
+    levelUpManager.draw();
   }
 
   // 簡易UI（本格的なUIは将来実装予定）
@@ -140,15 +161,11 @@ class GameManager {
     textSize(16);
     text("LIFE: " + player.life, 10, 10);
 
-    int remainingFrames = max(0, Config.TIME_LIMIT_FRAMES - elapsedFrames);
-    int remainingSeconds = remainingFrames / 60;
-    text("TIME: " + remainingSeconds, 10, 30);
+    int elapsedSeconds = elapsedFrames / 60;
+    text("TIME: " + elapsedSeconds, 10, 30);
+    text("STAGE: " + enemy.difficultyStage, 10, 50);
 
-    if (state == GameState.WIN) {
-      textAlign(CENTER, CENTER);
-      textSize(32);
-      text("WIN", width / 2, height / 2);
-    } else if (state == GameState.LOSE) {
+    if (state == GameState.LOSE) {
       textAlign(CENTER, CENTER);
       textSize(32);
       text("LOSE", width / 2, height / 2);

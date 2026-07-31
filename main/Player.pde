@@ -7,7 +7,7 @@ class Player {
   PVector pos;
   float radius;   // 当たり判定用の半径（円形）。サイズ変更しやすいよう変数化
   int life;
-  float speedMultiplier; // アップグレードで変化する移動速度の倍率（初期値1.0）
+    float speedMultiplier; // アップグレードで変化する移動速度の倍率（初期値1.0）
 
   // 装備している武器のリスト
   // 将来的に武器アンロック・複数武器の同時運用に対応できるようArrayListで管理
@@ -20,7 +20,7 @@ class Player {
     speedMultiplier = 1.0;
     weapons = new ArrayList<Weapon>();
   }
-
+  
   // ---------- 入力 ----------
   // キー入力から移動方向ベクトルを求める（正規化前）
   // keysHeld配列（メインスケッチで管理）を参照することで、複数キーの同時押し（斜め移動）に対応する

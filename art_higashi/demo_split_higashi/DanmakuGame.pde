@@ -10,8 +10,15 @@ GameManager gameManager;
 // Playerクラスは同一スケッチ内の内部クラスとして、この配列に直接アクセスする
 boolean[] keysHeld = new boolean[256];
 
+PFont gameFont; // 日本語表示用フォント（setup()で読み込む）
+
+
 void setup() {
   size(640, 800);
+  // 日本語グリフを持つシステムフォントを読み込む
+  // Windowsなら "Meiryo"（メイリオ）が入っていることが多い
+  gameFont = createFont("Meiryo", 32, true);
+  textFont(gameFont);
   gameManager = new GameManager();
 }
 

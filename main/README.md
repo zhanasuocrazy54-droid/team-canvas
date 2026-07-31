@@ -9,8 +9,6 @@ Processing (Java モード) で作成した弾幕ゲームの土台です。
 1. Processing IDE で `DanmakuGame` フォルダを開く（`DanmakuGame.pde` がメインファイル）
 2. 実行（▶ボタン）
 3. WASDで移動、Shift押しっぱなしで低速移動、攻撃は自動
-4. 20秒ごとに画面が一時停止し、強化の3択が出るので数字キー（1〜3）で選択する
-   （このとき敵も同時に強化される）
 
 ## ファイル構成と責務
 
@@ -18,50 +16,25 @@ Processing (Java モード) で作成した弾幕ゲームの土台です。
 |---|---|
 | `DanmakuGame.pde` | `setup()`/`draw()`、キー入力イベントの受付のみ |
 | `Config.pde` | ゲームバランス値（速度・弾速・間隔など）を一元管理 |
-| `GameState.pde` | ゲーム状態（PLAYING / LEVEL_UP / LOSE）を表すenum |
-| `GameManager.pde` | ゲームループの制御・各オブジェクトの生成・レベルアップ進行・敗北判定 |
-| `CollisionManager.pde` | 当たり判定・相殺処理を一元管理（敵弾はhpが尽きるまで消えない） |
-| `Player.pde` | プレイヤーの入力・移動・ライフ管理・武器の保持 |
-| `Enemy.pde` | 敵の位置管理・移動パターンの保持・弾幕パターンの保持・難易度管理(levelUp) |
-| `EnemyMovement.pde` | 敵の移動パターンの基底クラスと具体的な移動（サイン波/円軌道） |
-| `Bullet.pde` | 弾の基底クラス（位置・速度・半径・hp・更新・描画・当たり判定） |
+| `GameState.pde` | ゲーム状態（PLAYING / WIN / LOSE）を表すenum |
+| `GameManager.pde` | ゲームループの制御・各オブジェクトの生成・勝敗判定 |
+| `CollisionManager.pde` | 当たり判定・相殺処理を一元管理 |
+| `Player.pde` | プレイヤーの入力・移動・ライフ管理 |
+| `Enemy.pde` | 敵の位置管理・弾幕パターンの保持 |
+| `Bullet.pde` | 弾の基底クラス（位置・速度・半径・更新・描画・当たり判定） |
 | `PlayerBullet.pde` / `EnemyBullet.pde` | Bulletを継承した具体的な弾 |
 | `Weapon.pde` | 武器の基底クラス（発動間隔の管理） |
-| `StraightShot.pde` / `ShotgunShot.pde` / `MeleeAttack.pde` | 具体的な武器 |
+| `StraightShot.pde` / `MeleeAttack.pde` | 具体的な武器 |
 | `BulletPattern.pde` | 弾幕パターンの基底クラス（発射間隔の管理） |
-| `RadialPattern.pde` / `AimPattern.pde` | 具体的な弾幕パターン（敵弾はEnemy.rollBulletHp()でhpを決める） |
-| `Upgrade.pde` | ローグライク風の強化選択肢（拡散弾追加、ライフ増加、速度UPなど） |
-| `LevelUpManager.pde` | 一定間隔でのレベルアップ（3択選択UI・入力受付・適用） |
+| `RadialPattern.pde` / `AimPattern.pde` | 具体的な弾幕パターン |
 | `Effect.pde` | 相殺演出の呼び出し口（現状は空実装） |
 | `DrawUtils.pde` | 円描画などの共通描画処理 |
-
-## ローグライク要素（レベルアップシステム）
-
-- `GameManager` が `Config.LEVEL_UP_INTERVAL_FRAMES`（デフォルト20秒）ごとに
-  `LevelUpManager.startLevelUp()` を呼び、`GameState.LEVEL_UP` に遷移してゲームを一時停止する。
-- `LevelUpManager` はプレイヤーがまだ選べる `Upgrade` の中からランダムに最大3つを提示する
-  （すでに持っている武器を追加するアップグレードは `isAvailable()` で除外される）。
-- プレイヤーが1〜3キーで選ぶと `Upgrade.apply()` でプレイヤー強化を適用し、
-  同時に `Enemy.levelUp()` を呼んで敵側も強化する（フェアさを保つため）。
-- `Enemy.levelUp()` では、敵弾の最大hp上昇・既存弾幕パターンの発射間隔短縮・
-  移動パターンの追加習得/切り替え、を段階的に行う。
-
-### 新しいアップグレードを追加する
-
-`Upgrade.pde` に `Upgrade` を継承したクラスを追加し、`LevelUpManager` のコンストラクタで
-`pool.add(new ○○Upgrade());` するだけで選択肢に加わる。
-
-### 新しい敵の移動パターンを追加する
-
-`EnemyMovement.pde` に `EnemyMovement` を継承したクラスを追加し、`move()` だけを実装する。
-`Enemy.levelUp()` の中で `unlockedMovements` に追加すれば、レベルアップ時に習得されるようになる。
 
 ## 拡張方法
 
 ### 新しい敵弾パターンを追加する（例：SpiralPattern）
 
-`BulletPattern` を継承し、`fire()` だけを実装します。敵弾にhpを持たせたい場合は
-`new EnemyBullet(enemy.pos, vel, radius, enemy.rollBulletHp())` のように4引数版のコンストラクタを使います。
+`BulletPattern` を継承し、`fire()` だけを実装します。
 
 ```java
 class SpiralPattern extends BulletPattern {
@@ -77,7 +50,7 @@ class SpiralPattern extends BulletPattern {
     angleOffset += 0.2;
     PVector vel = new PVector(cos(angleOffset), sin(angleOffset));
     vel.mult(Config.ENEMY_SPIRAL_SPEED);
-    enemyBullets.add(new EnemyBullet(enemy.pos, vel, Config.ENEMY_SPIRAL_RADIUS, enemy.rollBulletHp()));
+    enemyBullets.add(new EnemyBullet(enemy.pos, vel, Config.ENEMY_SPIRAL_RADIUS));
   }
 }
 ```
