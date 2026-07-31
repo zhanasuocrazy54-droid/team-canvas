@@ -25,4 +25,10 @@ abstract class BulletPattern {
   // ---------- 弾生成 ----------
   // 継承先で「どんな弾をどう配置するか」のみを実装する
   abstract void fire(Enemy enemy, PVector playerPos, ArrayList<EnemyBullet> enemyBullets);
+
+  // ---------- 描画 ----------
+  // 多くのパターンは専用の描画を持たないためデフォルトは空実装
+  // 弾の発生源が敵本体と異なる位置になるパターンのみオーバーライドして可視化する
+  void draw() {
+  }
 }

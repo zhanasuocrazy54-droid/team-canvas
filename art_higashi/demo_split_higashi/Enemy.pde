@@ -29,6 +29,12 @@ class Enemy {
   // ---------- 描画 ----------
   void draw() {
     drawShape();
+
+    // 各パターンが専用の描画を持っていれば、それも呼び出す
+    // （例：本体から離脱して漂う攻撃の中心を可視化するなど）
+    for (BulletPattern p : patterns) {
+      p.draw();
+    }
   }
 
   void drawShape() {

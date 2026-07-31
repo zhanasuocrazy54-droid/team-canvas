@@ -11,7 +11,7 @@ GameManager gameManager;
 boolean[] keysHeld = new boolean[256];
 
 void setup() {
-  size(480, 640);
+  size(640, 800);
   gameManager = new GameManager();
 }
 

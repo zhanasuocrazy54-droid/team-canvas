@@ -34,15 +34,18 @@ class GameManager {
   void setupPlayer() {
     player = new Player(new PVector(width / 2, height - 60));
     player.weapons.add(new StraightShot());
-    player.weapons.add(new MeleeAttack());
+    //player.weapons.add(new MeleeAttack());
   }
 
   // 敵と使用する弾幕パターンを生成する
   // 将来的な複数ボス対応は、Enemyを複数生成しリストで管理する形に拡張できる
   void setupEnemy() {
     enemy = new Enemy(new PVector(width / 2, 80));
-    enemy.patterns.add(new RadialPattern());
+    //enemy.patterns.add(new RadialPattern());
+    enemy.patterns.add(new SpiralRadialPattern());
+    enemy.patterns.add(new DriftingRadialPattern());
     enemy.patterns.add(new AimPattern());
+    enemy.patterns.add(new AimPattern_Double());
   }
 
   // 弾・エフェクトの管理リストと当たり判定処理を初期化する
