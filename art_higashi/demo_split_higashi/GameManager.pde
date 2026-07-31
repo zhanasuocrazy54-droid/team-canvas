@@ -35,7 +35,7 @@ class GameManager {
   // 将来的な武器アンロックは、ここで所持武器リストを外部から渡す形に拡張できる
   void setupPlayer() {
     player = new Player(new PVector(width / 2, height - 60));
-    player.weapons.add(new StraightShot());
+    //player.weapons.add(new StraightShot());
     //player.weapons.add(new MeleeAttack());
   }
 
